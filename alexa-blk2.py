@@ -27,9 +27,16 @@ def new_game():
 
 def stock_info(ticker):
 
+    print(ticker)
     StockRequest = requests.get("https://www.blackrock.com/tools/hackathon/security-data", params= {'identifiers':ticker})
+
     data = json.loads(StockRequest.text)
+
     print("json loaded")
+
+    if (data["success"] != True):
+        print("security not found. exiting")
+        return question("I could not find that security. Please try again")
 
     assetType = data["resultMap"]["SECURITY"][0]["assetType"]
 
@@ -39,7 +46,8 @@ def stock_info(ticker):
         print(ticker + " is a stock")
         description =  data["resultMap"]["SECURITY"][0]["description"]
         peRatio =  data["resultMap"]["SECURITY"][0]["peRatio"]
-        msg = ticker + " is the stock for " + description + ". It has a P E ratio of " + str(peRatio)
+        #msg = ticker + " is the stock for " + description + ". It has a P E ratio of " + str(peRatio)
+        msg = render_template('stockInfo',ticker=ticker,description=description,peRatio=str(peRatio))
 
     if(assetType == "Fund"):
         print("this is a fund")

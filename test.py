@@ -9,6 +9,11 @@ print("request received")
 
 data = json.loads(portfolioAnalysisRequest.text)
 print("json loaded")
+print(data["success"])
+
+if (data["success"] != True):
+    print("security not found. exiting")
+    quit()
 
 assetType = data["resultMap"]["SECURITY"][0]["assetType"]
 
