@@ -17,20 +17,20 @@ logging.getLogger("flask_ask").setLevel(logging.DEBUG)
 
 @ask.launch
 
-def new_game():
+def welome():
 
     welcome_msg = render_template('welcome')
 
     return question(welcome_msg)
 
-@ask.intent("StockInfoIntent")
+@ask.intent("SecurityInfoIntent")
 
-def stock_info(ticker):
+def security_info(ticker):
 
     print(ticker)
-    StockRequest = requests.get("https://www.blackrock.com/tools/hackathon/security-data", params= {'identifiers':ticker})
+    SecurityRequest = requests.get("https://www.blackrock.com/tools/hackathon/security-data", params= {'identifiers':ticker})
 
-    data = json.loads(StockRequest.text)
+    data = json.loads(SecurityRequest.text)
 
     print("json loaded")
 

@@ -1,3 +1,3 @@
-welcome: Ask me about stocks
+welcome: Ask me about stocks or funds
 
 stockInfo: '{{ticker}} is the stock for {{description}}. It has a P E ratio of {{peRatio}}'
