@@ -2,6 +2,7 @@ import logging
 import requests
 import json
 import urllib2
+from googlefinance import getQuotes
 from xml.etree import ElementTree as etree
 from random import randint
 from flask import Flask, render_template
@@ -30,8 +31,34 @@ def welome():
 def security_info(A,B,C,D,E):
 
     print("Intent: SecurityInfoIntent")
-    print("input: " + A + B + C + D + E)
-    SecurityRequest = requests.get("https://www.blackrock.com/tools/hackathon/security-data", params= {'identifiers':'BLK'})
+    ticker = str(A + B + C + D + E)
+    print("raw response: " + ticker)
+    ticker = filter(str.isalnum, ticker)
+    ticker = ticker.upper()
+    print("input: " + ticker)
+
+    data = getQuotes(str(ticker))
+    print(data[0])
+    price = data[0]['LastTradePrice']
+    price = str(round(float(price),2))
+    print(ticker + "|" + price)
+    msg = "The current price of ticker " + ticker + " is " + price + " dollars. " 
+
+    return question(msg) 
+
+@ask.intent("SecurityInfoIntentBLK",default={"B":"","C":"","D":"","E":""})
+## !! This intent is for the BLK API which I cannot access as of 11/19/2016. When it is available, will convert
+## !! to using this intent/code.
+## User must say at least one letter for a security symbol. The remaining 4 slots will default to empty string
+## if user doesn't say them. So 'FB' and 'GOOG' and 'MALOX' will all work.
+
+def security_infoBLK(A,B,C,D,E):
+
+    print("Intent: SecurityInfoIntent")
+    ticker = A + B + C + D + E
+    print("input: " + ticker)
+   
+    SecurityRequest = requests.get("https://www.blackrock.com/tools/hackathon/security-data", params= {'identifiers':ticker})
 
     data = json.loads(SecurityRequest.text)
 
