@@ -1,10 +1,10 @@
 import logging
 import requests
 import json
+import urllib2
+from xml.etree import ElementTree as etree
 from random import randint
-
 from flask import Flask, render_template
-
 from flask_ask import Ask, statement, question, session
 
 
@@ -23,12 +23,15 @@ def welome():
 
     return question(welcome_msg)
 
-@ask.intent("SecurityInfoIntent")
+@ask.intent("SecurityInfoIntent",default={"B":"","C":"","D":"","E":""})
+## User must say at least one letter for a security symbol. The remaining 4 slots will default to empty string
+## if user doesn't say them. So 'FB' and 'GOOG' and 'MALOX' will all work.
 
-def security_info(ticker):
+def security_info(A,B,C,D,E):
 
-    print(ticker)
-    SecurityRequest = requests.get("https://www.blackrock.com/tools/hackathon/security-data", params= {'identifiers':ticker})
+    print("Intent: SecurityInfoIntent")
+    print("input: " + A + B + C + D + E)
+    SecurityRequest = requests.get("https://www.blackrock.com/tools/hackathon/security-data", params= {'identifiers':'BLK'})
 
     data = json.loads(SecurityRequest.text)
 
@@ -56,6 +59,37 @@ def security_info(ticker):
         msg = ticker + " is a " + morningstarCategory + " fund"
    
     return question(msg) 
+
+@ask.intent("MarketUpdateIntent")
+
+def market_update():
+
+    print("Intent: MarketUpdateIntent")
+    blk_file = urllib2.urlopen('https://www.blackrockblog.com/feed/')
+    #convert to string:
+    blk_data = blk_file.read()
+    #close file because we dont need it anymore:
+    blk_file.close()
+
+    #entire feed
+    blk_root = etree.fromstring(blk_data)
+    item = blk_root.findall('channel/item')
+
+    stories = "Here are the three latest stories from the Blackrock blog: "
+    num = 1
+
+    for entry in item:
+        #get description
+        stories += " Number " + str(num) + ". "
+        stories += entry.findtext('description')
+        if num == 3:
+            break
+        num += 1
+
+    stories += " Go to blackrock blog dot com to read the full stories."
+    print("reponse : " + stories)
+    return statement(stories)
+
 
 #@ask.intent("YesIntent")
 
@@ -89,6 +123,7 @@ def security_info(ticker):
 @ask.intent("AMAZON.StopIntent")
 
 def stop():
+    print ("Intent: AMAZON.StopIntent")
     return statement("Goodbye.")
 
 if __name__ == '__main__':
