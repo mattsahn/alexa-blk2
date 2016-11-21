@@ -35,14 +35,20 @@ def security_info(A,B,C,D,E):
     print("raw response: " + ticker)
     ticker = filter(str.isalnum, ticker)
     ticker = ticker.upper()
+    ticker_spaced = " ".join(ticker)
     print("input: " + ticker)
 
-    data = getQuotes(str(ticker))
+    try:
+        data = getQuotes(str(ticker))
+    except:
+        print("Problem loading ticker " + ticker)
+        return question("Problem loading ticker " + ticker_spaced + ". Please try again")
+
     print(data[0])
     price = data[0]['LastTradePrice']
     price = str(round(float(price),2))
     print(ticker + "|" + price)
-    msg = "The current price of ticker " + ticker + " is " + price + " dollars. " 
+    msg = "The current price of ticker " + ticker_spaced + " is " + price + " dollars. " 
 
     return question(msg) 
 
@@ -115,7 +121,7 @@ def market_update():
 
     stories += " Go to blackrock blog dot com to read the full stories."
     print("reponse : " + stories)
-    return statement(stories)
+    return question(stories)
 
 
 #@ask.intent("YesIntent")
