@@ -24,15 +24,15 @@ def welome():
 
     return question(welcome_msg)
 
-@ask.intent("SecurityInfoIntent",default={"B":"","C":"","D":"","E":""})
+@ask.intent("SecurityInfoIntent")
 ## User must say at least one letter for a security symbol. The remaining 4 slots will default to empty string
 ## if user doesn't say them. So 'FB' and 'GOOG' and 'MALOX' will all work.
 
-def security_info(A,B,C,D,E):
+def security_info(ticker):
 
     print("Intent: SecurityInfoIntent")
-    ticker = str(A + B + C + D + E)
     print("raw response: " + ticker)
+    ticker = str(ticker)
     ticker = filter(str.isalnum, ticker)
     ticker = ticker.upper()
     ticker_spaced = " ".join(ticker)
